@@ -4,6 +4,7 @@ package org.academiadecodigo.monopoly.game;
 import org.academiadecodigo.bootcamp.Prompt;
 import org.academiadecodigo.bootcamp.scanners.integer.IntegerInputScanner;
 import org.academiadecodigo.bootcamp.scanners.integer.IntegerSetInputScanner;
+
 import org.academiadecodigo.monopoly.player.Player;
 
 
@@ -122,15 +123,24 @@ public class Game {
         }
     }
 
-    private void promptUserSellMenu(Player player){
+    private void menuForcedSell(Player player){
 
         Set<Integer> validOptions = new HashSet<>();
-        validOptions.add(1);
-        validOptions.add(2);
+        //validOptions.add(1);
+        //validOptions.add(2);
+
+        for (int i = 0; i <player.nrOfHouses; i++) {
+            validOptions.add(i+1);
+        }
+
         IntegerInputScanner menuOption = new IntegerSetInputScanner(validOptions);
-        menuOption.setMessage(player.getName() + " these are your properties: \n" +
-                "(1) I.\n" +
-                "(2) Sell one property \n");
+        menuOption.setMessage(player.getName() +" has these houses : \n "+ player.getHouses());
+
+
+
+//                " these are your properties: \n" +
+//                "(1) I.\n" +
+//                "(2) Sell one property \n");
 
         int option = prompt.getUserInput(menuOption);
 
@@ -139,11 +149,19 @@ public class Game {
 
     private void playerMove(Player player){
 
-        int currentPos =player.getCurrentPosition();
-        player.setCurrentPosition(player.getCurrentPosition()+(dice.randomizer()));
-        System.out.println(player.getName()+" has moved from "+board.getHouseName(currentPos-1));
+
 
         player.move(dice.rollTheDice());
+        int currentPos =player.getCurrentPosition();
+        System.out.println(player.getName()+", you are now at house: "+board.getHouse(currentPos).getHouseName());
+        if (board.getHouse(currentPos).isOwned()){
+            if(player.getBalance()<board.getHouse(currentPos).getRent()){
+
+            }
+            //payUp
+
+
+        }
 
     }
 
@@ -165,6 +183,8 @@ public class Game {
 
     public void playRound(Player player){
         //TODO
+
+
 
 
 
