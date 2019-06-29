@@ -4,9 +4,10 @@ package org.academiadecodigo.monopoly.game;
 import org.academiadecodigo.bootcamp.Prompt;
 import org.academiadecodigo.bootcamp.scanners.integer.IntegerInputScanner;
 import org.academiadecodigo.bootcamp.scanners.integer.IntegerSetInputScanner;
+
 import org.academiadecodigo.monopoly.player.Player;
 
-import java.util.Arrays;
+
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
@@ -20,6 +21,7 @@ public class Game {
     private int numberOfPlayers;
     private int[] playerTurn;
     private Prompt prompt;
+    private int playCounter;
 
 
     /**
@@ -33,19 +35,25 @@ public class Game {
      * */
     public Game (int numberOfPlayers) {
         this.numberOfPlayers=numberOfPlayers;
-        int numberOfHouses = 39;
-        board = new Board(numberOfHouses);
+
+        board = new Board();
 
         dice = new Dice();
         playerTurn = new int[numberOfPlayers];
         prompt = new Prompt(System.in, System.out);
+        playCounter = 0;
     }
 
 
 
-    public void init(){
+    public void init() {
         setupGame();
-        startPlay();
+
+
+        while (board.isLive || playCounter <10) {
+            startPlay();
+            playCounter++;
+        }
     }
 
     /**
@@ -77,10 +85,13 @@ public class Game {
             for (int j = i+1; j <openingGameChooser.length ; j++) {
 
                 if (openingGameChooser[i]>openingGameChooser[j]) {
+
                     temp = openingGameChooser[i];
                     temp2 = playerTurn[i];
+
                     openingGameChooser[i]=openingGameChooser[j];
                     playerTurn[i]=playerTurn[j];
+
                     openingGameChooser[j]=temp;
                     playerTurn[j]=temp2;
                 }
@@ -95,29 +106,41 @@ public class Game {
         }
     }
 
-    private int promptUserTurnMenu(Player player) {
+    private void promptUserRollDice(Player player) {
 
         Set<Integer> validOptions = new HashSet<>();
         validOptions.add(1);
         validOptions.add(2);
         IntegerInputScanner menuOption = new IntegerSetInputScanner(validOptions);
         menuOption.setMessage(player.getName() + " it's your turn, now you can:\n" +
-                "(1) Roll the dice and keep playing.\n" +
-                "(2) Sell one property \n");
+                "(1) Roll the dice and move.\n" +
+                "(2) Quit  \n");
 
         int option = prompt.getUserInput(menuOption);
-        return option;
+
+        if(option == 2){
+
+        }
     }
 
-    private void promptUserSellMenu(Player player){
+    private void menuForcedSell(Player player){
 
         Set<Integer> validOptions = new HashSet<>();
-        validOptions.add(1);
-        validOptions.add(2);
+        //validOptions.add(1);
+        //validOptions.add(2);
+
+        for (int i = 0; i <player.nrOfHouses; i++) {
+            validOptions.add(i+1);
+        }
+
         IntegerInputScanner menuOption = new IntegerSetInputScanner(validOptions);
-        menuOption.setMessage(player.getName() + " these are your properties: \n" +
-                "(1) I.\n" +
-                "(2) Sell one property \n");
+        menuOption.setMessage(player.getName() +" has these houses : \n "+ player.getHouses());
+
+
+
+//                " these are your properties: \n" +
+//                "(1) I.\n" +
+//                "(2) Sell one property \n");
 
         int option = prompt.getUserInput(menuOption);
 
@@ -126,24 +149,50 @@ public class Game {
 
     private void playerMove(Player player){
 
+
+
+        player.move(dice.rollTheDice());
         int currentPos =player.getCurrentPosition();
-        player.setCurrentPosition(player.getCurrentPosition()+(dice.randomizer()));
-        System.out.println(player.getName()+" has moved from "+board.getHouseName(currentPos-1));
+        System.out.println(player.getName()+", you are now at house: "+board.getHouse(currentPos).getHouseName());
+        if (board.getHouse(currentPos).isOwned()){
+            if(player.getBalance()<board.getHouse(currentPos).getRent()){
+
+            }
+            //payUp
+
+
+        }
+
     }
+
+
+
 
 
     private void startPlay() {
 
-        playRound();
+
+        for (int i = 0; i <numberOfPlayers ; i++) {
+            if(playersList.contains(playersList.get(i))){
+            playRound(playersList.get(i));
+            }
+        }
+
+
     }
 
-    public void playRound(){
+    public void playRound(Player player){
         //TODO
-        if (promptUserTurnMenu(playersList.get(playerTurn[0])) == 2) {
-            promptUserSellMenu(playersList.get(playerTurn[0]));
 
-        }
-        playerMove(playersList.get(playerTurn[0]));
+
+
+
+
+//        if (promptUserTurnMenu(playersList.get(playerTurn[0])) == 2) {
+//            promptUserSellMenu(playersList.get(playerTurn[0]));
+//
+//        }
+//        playerMove(playersList.get(playerTurn[0]));
     }
 
 
