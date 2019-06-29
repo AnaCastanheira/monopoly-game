@@ -5,6 +5,7 @@ import org.academiadecodigo.monopoly.house.House;
 import java.net.Socket;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Set;
 
 public class Player implements Runnable, Iterable<House> {
@@ -12,7 +13,7 @@ public class Player implements Runnable, Iterable<House> {
 
     private String name;
     private int balance;
-    private Set<House> houses;
+    private LinkedList<House> houses;
     private int currentPosition;
     private Socket playerSocket;
 
@@ -21,8 +22,7 @@ public class Player implements Runnable, Iterable<House> {
     public Player(String name){
 
         this.name = name;
-        this.balance = balance;
-        this.houses = new HashSet<House>();
+        this.houses = new LinkedList<House>();
 
     }
 
