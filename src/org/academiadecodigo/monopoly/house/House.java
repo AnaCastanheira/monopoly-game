@@ -7,38 +7,50 @@ public class House {
     private int position;
     private boolean owned;
 
-    public House(){}
-
-    public int getValue(){
-
-        return;
+    public House(int position, HouseType houseType, String name) {
+        this.position = position;
+        this.houseType = houseType;
+        this.name = name;
     }
 
-    public int getRent(){
-        return;
+    public int getValue() {
+
+        return houseType.value;
     }
 
-    public boolean isOwned(){
-        return;
+    public int getRent() {
+        return houseType.rent;
     }
 
-    public void buy(){}
+    public String getName() {
+        return name;
+    }
 
-    public void sell(){}
+    public boolean isOwned() {
+        return owned;
+    }
+
+    public void buy() {
+        owned = true;
+    }
+
+    public void sell() {
+        owned = false;
+    }
 
     public enum HouseType {
-        AMARELO(30,30),
-        AZUL(30,30),
-        VERDE(30,30),
+        AMARELO(30, 30),
+        AZUL(30, 30),
+        VERDE(30, 30),
         VERMELHO(30, 30);
 
 
         private int value;
         private int rent;
 
-        HouseType(int value, int rent){
-            this.value=value;
-            this.rent=rent;
+        HouseType(int value, int rent) {
+            this.value = value;
+            this.rent = rent;
 
         }
 
