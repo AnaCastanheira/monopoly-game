@@ -2,9 +2,11 @@ package org.academiadecodigo.monopoly.player;
 
 import org.academiadecodigo.monopoly.house.House;
 
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
-public class Player implements Runnable{
+public class Player implements Runnable, Iterable<House> {
 
 
     private String name;
@@ -15,9 +17,10 @@ public class Player implements Runnable{
 
     //TODO: add parameter name?
     public Player(){
+
         this.name = name;
         this.balance = balance;
-        this.houses = houses;
+        this.houses = new HashSet<House>();
 
     }
 
@@ -25,7 +28,14 @@ public class Player implements Runnable{
     // TODO build the string with the all the properties of the houses.
     // Returns a String with the properties the player has.
     public String getHouses(){
-        String myProperties = houses.toArray().toString();
+
+        String myProperties = "";
+
+        for (House house : houses) {
+            myProperties += "Name of property: "+ house.getName() + "\" Value: " + house.getValue() + "\" Rent: " +
+                    house.getRent() + "\"";
+        }
+
         return myProperties;
     }
 
@@ -38,6 +48,14 @@ public class Player implements Runnable{
     public int getCurrentPosition(){
         return currentPosition;
     }
+
+
+    @Override
+    public void run() {
+
+
+    }
+
 
     //adds the value price in the balance of the player
     public void addMoney(int price){
@@ -69,11 +87,16 @@ public class Player implements Runnable{
         currentPosition += diceResult;
     }
 
-    //TODO to continue tomorrow
+
+
     @Override
-    public void run() {
+    public Iterator<House> iterator(){
+
+        return houses.iterator();
 
     }
+
+
 }
 
     // TODO: Check following changes with group:
