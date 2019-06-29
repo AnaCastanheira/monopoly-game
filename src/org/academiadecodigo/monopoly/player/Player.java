@@ -37,7 +37,7 @@ public class Player implements Runnable, Iterable<House> {
 
         for (House house : houses) {
             myProperties += "("+i+") Name: "+ house.getHouseName()+"; Value: "+ house.getValue()+"; Rent: "+
-                    house.getRent()+"\"";
+                    house.getRent()+"\n";
             i++;
         }
 
@@ -47,6 +47,13 @@ public class Player implements Runnable, Iterable<House> {
     public int nrOfHouses(){
 
         return houses.size();
+    }
+
+    public boolean haveThisHouse(House house) {
+        if (houses.contains(house)) {
+            return true;
+        }
+        return false;
     }
 
 
