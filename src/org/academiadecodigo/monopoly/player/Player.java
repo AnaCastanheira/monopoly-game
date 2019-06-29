@@ -88,7 +88,6 @@ public class Player implements Runnable, Iterable<House> {
     }
 
 
-
     @Override
     public Iterator<House> iterator(){
 
