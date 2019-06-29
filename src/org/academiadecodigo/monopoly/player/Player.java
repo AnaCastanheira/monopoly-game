@@ -2,6 +2,7 @@ package org.academiadecodigo.monopoly.player;
 
 import org.academiadecodigo.monopoly.house.House;
 
+import java.net.Socket;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -13,6 +14,7 @@ public class Player implements Runnable, Iterable<House> {
     private int balance;
     private Set<House> houses;
     private int currentPosition;
+    private Socket playerSocket;
 
 
 
@@ -31,12 +33,20 @@ public class Player implements Runnable, Iterable<House> {
 
         String myProperties = "";
 
+        int i = 1;
+
         for (House house : houses) {
-            myProperties += "Name of property: "+ house.getName() + "\" Value: " + house.getValue() + "\" Rent: " +
-                    house.getRent() + "\"";
+            myProperties += "("+i+") Name: "+ house.getHouseName()+"; Value: "+ house.getValue()+"; Rent: "+
+                    house.getRent()+"\"";
+            i++;
         }
 
         return myProperties;
+    }
+
+    public int nrOfHouses(){
+
+        return houses.size();
     }
 
 
