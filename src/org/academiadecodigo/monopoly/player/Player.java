@@ -33,12 +33,20 @@ public class Player implements Runnable, Iterable<House> {
 
         String myProperties = "";
 
+        int i = 1;
+
         for (House house : houses) {
-            myProperties += "Name of property: "+ house.getHouseName() + "\" Value: " + house.getValue() + "\" Rent: " +
-                    house.getRent() + "\"";
+            myProperties += "("+i+") Name: "+ house.getHouseName()+"; Value: "+ house.getValue()+"; Rent: "+
+                    house.getRent()+"\"";
+            i++;
         }
 
         return myProperties;
+    }
+
+    public int nrOfHouses(){
+
+        return houses.size();
     }
 
 
