@@ -15,8 +15,8 @@ public class Player implements Runnable, Iterable<House> {
     private int currentPosition;
 
 
-    //TODO: add parameter name?
-    public Player(){
+
+    public Player(String name){
 
         this.name = name;
         this.balance = balance;
@@ -39,10 +39,18 @@ public class Player implements Runnable, Iterable<House> {
         return myProperties;
     }
 
+
+    //Returns a string with the name of the client
+    public String getName(){
+        return name;
+    }
+
+
     //Returns the total amount of money the player currently has
     public int getBalance(){
         return balance;
     }
+
 
     //returns the current position of the player in the board
     public int getCurrentPosition(){
@@ -53,7 +61,6 @@ public class Player implements Runnable, Iterable<House> {
     @Override
     public void run() {
 
-
     }
 
 
@@ -63,11 +70,13 @@ public class Player implements Runnable, Iterable<House> {
 
     }
 
+
     //decreases the value price to the balance of the player
     public void removeMoney(int price){
         balance -= price;
 
     }
+
 
     //adds a new house to the set of properties the player has, and decreases its value to the balance
     public void addHouse(House house){
@@ -75,18 +84,19 @@ public class Player implements Runnable, Iterable<House> {
         removeMoney(house.getValue());
     }
 
+
     //removes a house form the set of properties the player has, and adds its value to the balance
     public void sellHouse(House house){
         houses.remove(house);
         addMoney(house.getValue());
     }
 
+
     //TODO check the variable "diceResult" with Ricardo and his randomizer
     //moves the position the player has in the board accordingly to the result of the dice play
     public void move(int diceResult){
         currentPosition += diceResult;
     }
-
 
 
     @Override
@@ -96,8 +106,8 @@ public class Player implements Runnable, Iterable<House> {
 
     }
 
-
 }
+
 
     // TODO: Check following changes with group:
     //  Changed method names: getProperties, addProperties, sellProperties to getHouses, addHouse, sellHouse;
