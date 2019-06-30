@@ -6,8 +6,10 @@ import org.academiadecodigo.bootcamp.scanners.integer.IntegerInputScanner;
 import org.academiadecodigo.bootcamp.scanners.integer.IntegerSetInputScanner;
 
 import org.academiadecodigo.monopoly.player.Player;
+import org.academiadecodigo.monopoly.player.PlayerTest;
 
 
+import java.sql.SQLOutput;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
@@ -19,17 +21,20 @@ public class Game {
     private LinkedList<Player> playersList;
     private Dice dice;
     private int numberOfPlayers;
-    private int[] playerTurn;
+    private int [] playerTurn;
     private Prompt prompt;
     private int playCounter;
 
 
     /**
      *
-     * Instanciar:
-     *              Board;
-     *              Dice;
-     *
+     * Instantiate:
+     *         		Board;
+     *              	Dice;
+     * Initialize:
+     * 			player Order array;
+     *			Prompt;
+     *			playCounter control variable;
      *
      *
      * */
@@ -50,19 +55,18 @@ public class Game {
         setupGame();
 
 
-        while (board.isLive || playCounter <10) {
+        while (board.isBoardLive() || playCounter <10) {
             startPlay();
             playCounter++;
         }
+
     }
 
     /**
      *
      * Instantiate new Player's on LinkedList 'players'
-     * Set playing order
-     * Distribute initial money
-     *
-     *
+     * Set an array with Players index distributed by playing order
+     * invoke method Distribute initial money
      *
      *
      * */
@@ -75,7 +79,8 @@ public class Game {
         for (int i = 0; i < numberOfPlayers ; i++) {
 
             playersList.add(i,new Player("Player - "+i));
-            openingGameChooser[i] = dice.randomizer();
+
+            openingGameChooser[i] = dice.rollTheDice();
             playerTurn[i]=i;
         }
 
@@ -97,105 +102,167 @@ public class Game {
                 }
             }
         }
+        board.buildBoard();
         distributeInitialMoney();
+        board.setBoardLive(true);
+        TextArt.welcomeMessage();
     }
+    /**
+     *
+     *  Distribute initial money to all players
+     *
+     */
 
     private void distributeInitialMoney(){
         for (Player list: playersList) {
             list.addMoney(INITIAL_MONEY);
         }
     }
+    /**
+     *
+     *  menu Prompted before player rolls dice:
+     *  gives options to:
+     *	- Roll the dice ( and ask Player to move himself )
+     *	- Remove himeself from game
+     *	- ForceShutdown the whole game
+     */
 
-    private void promptUserRollDice(Player player) {
-
+    private void menuUserRollDice(Player player) {
+        System.out.println("It's your turn "+player.getName()+ ", you are currently at position: "+player.getCurrentPosition()+"\n");
         Set<Integer> validOptions = new HashSet<>();
         validOptions.add(1);
         validOptions.add(2);
-        IntegerInputScanner menuOption = new IntegerSetInputScanner(validOptions);
-        menuOption.setMessage(player.getName() + " it's your turn, now you can:\n" +
-                "(1) Roll the dice and move.\n" +
-                "(2) Quit  \n");
+        validOptions.add(3);
 
+        IntegerInputScanner menuOption = new IntegerSetInputScanner(validOptions);
+        menuOption.setMessage(" now you can:\n" +
+                "(1) Roll the dice and move.\n" +
+                "(2) Leave Game  \n" +
+                "(3) Force  game shutdown.\n");
         int option = prompt.getUserInput(menuOption);
 
         if(option == 2){
-
+            playersList.remove(player);
+            System.out.println(player.getName()+ " has left the game.");
+            return;
         }
+
+        if(option==3){
+
+            System.out.println("The Game is now over.\n"+
+                    player.getName()+" has decided to finish the game.");
+            System.exit(1);
+        }
+
+        player.move(dice.rollTheDice());
+
     }
 
-    private void menuForcedSell(Player player){
+    /**
+     *
+     *  menu Prompted after the player Rolls the dice,
+     *  	IF the house where he isn't owned
+     *  gives options to:
+     *	- Buy the house
+     *	- Sell a house
+     *	- End his turn
+     */
 
+    private void menuOptionBuy(Player player){
+        System.out.println(player.getName()+ "you have moved to "+player.getCurrentPosition());
         Set<Integer> validOptions = new HashSet<>();
-        //validOptions.add(1);
-        //validOptions.add(2);
+        validOptions.add(1);
+        validOptions.add(2);
+        validOptions.add(3);
 
-        for (int i = 0; i <player.nrOfHouses; i++) {
+        IntegerInputScanner menuOption = new IntegerSetInputScanner(validOptions);
+        menuOption.setMessage(" now you can:\n" +
+                "(1) Buy\n" +
+                "(2) Sell\n" +
+                "(3) End Turn\n");
+
+        int option = prompt.getUserInput(menuOption);
+
+        if(option == 1) {
+            if(player.getBalance()<board.getHouse(player.getCurrentPosition()).getValue()){
+                System.out.println("You have no money");
+                //TODO WANNA SELL ONE ???????????????????????
+                return;
+            }
+            player.addHouse(board.getHouse(player.getCurrentPosition()));
+        }
+        if(option ==2){
+            menuForcedSell(player);
+            return;
+        }
+        System.out.println(player.getName()+" has ended his turn.\n");
+    }
+
+
+    /**
+     *
+     *  menu Prompted IF player has to pay rent && has insifucient funds:
+     *  lists player owned houses giving options to:
+     *	- Select the house he wants to sell
+     *
+     *
+     */
+
+
+    private void menuForcedSell(Player player){
+        Set<Integer> validOptions = new HashSet<>();
+
+
+        for (int i = 0; i <player.nrOfHouses(); i++) {
             validOptions.add(i+1);
         }
 
         IntegerInputScanner menuOption = new IntegerSetInputScanner(validOptions);
-        menuOption.setMessage(player.getName() +" has these houses : \n "+ player.getHouses());
-
-
-
-//                " these are your properties: \n" +
-//                "(1) I.\n" +
-//                "(2) Sell one property \n");
-
+        menuOption.setMessage("You will have to choose one house to sell " + player.getName() +", please select one of your houses : \n "+ player.getHouses());
         int option = prompt.getUserInput(menuOption);
 
-    }
-
-
-    private void playerMove(Player player){
-
-
-
-        player.move(dice.rollTheDice());
-        int currentPos =player.getCurrentPosition();
-        System.out.println(player.getName()+", you are now at house: "+board.getHouse(currentPos).getHouseName());
-        if (board.getHouse(currentPos).isOwned()){
-            if(player.getBalance()<board.getHouse(currentPos).getRent()){
-
-            }
-            //payUp
-
-
-        }
-
-    }
-
-
-
-
-
-    private void startPlay() {
-
-
-        for (int i = 0; i <numberOfPlayers ; i++) {
-            if(playersList.contains(playersList.get(i))){
-            playRound(playersList.get(i));
-            }
-        }
-
-
+        //for (int i = 0; i <player.nrOfHouses() ; i++) {
+          //  if(i == (option - 1)){
+                //TODO método getter LinkedList position of house in Player player.sellHouse(board.getHouse();
+                player.sellHouse(option-1);
+                System.out.println("### house removed ###\n");
+            //}
+        //}
     }
 
     public void playRound(Player player){
         //TODO
+        playerMove(player);
+    }
 
+    private void playerMove(Player player) {
 
+        menuUserRollDice(player);
 
+        int currentPos = player.getCurrentPosition();
 
+        System.out.println(player.getName() + ", you are now at house: " + board.getHouse(currentPos).getHouseName());
 
-//        if (promptUserTurnMenu(playersList.get(playerTurn[0])) == 2) {
-//            promptUserSellMenu(playersList.get(playerTurn[0]));
-//
-//        }
-//        playerMove(playersList.get(playerTurn[0]));
+        if (board.getHouse(currentPos).isOwned() && !player.haveThisHouse(board.getHouse(currentPos))) {
+
+            if (player.getBalance() < board.getHouse(currentPos).getRent()) {
+                menuForcedSell(player);
+            }
+            player.removeMoney(board.getHouse(currentPos).getRent());
+
+            return;
+        }
+
+        menuOptionBuy(player);
     }
 
 
+    private void startPlay() {
 
+        for (int i = 0; i <playersList.size() ; i++) {
+            if(playersList.contains(playersList.get(playerTurn[i]))){ /** Jump player position if player has left */
+                playRound(playersList.get(playerTurn[i]));
+            }
+        }
+    }
 }
-

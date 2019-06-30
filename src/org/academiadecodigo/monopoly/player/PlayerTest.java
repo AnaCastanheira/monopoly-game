@@ -1,6 +1,7 @@
 package org.academiadecodigo.monopoly.player;
 
 import org.academiadecodigo.monopoly.house.House;
+import org.academiadecodigo.monopoly.house.HouseTest;
 
 import java.net.Socket;
 import java.util.HashSet;
@@ -8,22 +9,21 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
 
-public class Player implements Iterable<House> {
+public class PlayerTest implements Runnable, Iterable<HouseTest> {
 
 
     private String name;
     private int balance;
-    private LinkedList<House> houses;
+    private LinkedList<HouseTest> houses;
     private int currentPosition;
     private Socket playerSocket;
 
 
 
-    public Player(String name, Socket playerSocket){
+    public PlayerTest(String name){
 
         this.name = name;
-        this.houses = new LinkedList<House>();
-        this.playerSocket = playerSocket;
+        this.houses = new LinkedList<HouseTest>();
 
     }
 
@@ -36,7 +36,7 @@ public class Player implements Iterable<House> {
 
         int i = 1;
 
-        for (House house : houses) {
+        for (HouseTest house : houses) {
             myProperties += "("+i+") Name: "+ house.getHouseName()+"; Value: "+ house.getValue()+"; Rent: "+
                     house.getRent()+"\n";
             i++;
@@ -50,7 +50,7 @@ public class Player implements Iterable<House> {
         return houses.size();
     }
 
-    public boolean haveThisHouse(House house) {
+    public boolean haveThisHouse(HouseTest house) {
         if (houses.contains(house)) {
             return true;
         }
@@ -76,6 +76,11 @@ public class Player implements Iterable<House> {
     }
 
 
+    @Override
+    public void run() {
+
+    }
+
 
     //adds the value price in the balance of the player
     public void addMoney(int price){
@@ -92,7 +97,7 @@ public class Player implements Iterable<House> {
 
 
     //adds a new house to the set of properties the player has, and decreases its value to the balance
-    public void addHouse(House house){
+    public void addHouse(HouseTest house){
         int i = houses.size();
         houses.add(i, house);
         removeMoney(house.getValue());
@@ -114,7 +119,7 @@ public class Player implements Iterable<House> {
 
 
     @Override
-    public Iterator<House> iterator(){
+    public Iterator<HouseTest> iterator(){
 
         return houses.iterator();
 
@@ -123,7 +128,7 @@ public class Player implements Iterable<House> {
 }
 
 
-    // TODO: Check following changes with group:
-    //  Changed method names: getProperties, addProperties, sellProperties to getHouses, addHouse, sellHouse;
-    //  Add and remove money methods receive int price(from selling, buying houses, rent or fees);
-    //  Method move receives parameter int diceResult;
+// TODO: Check following changes with group:
+//  Changed method names: getProperties, addProperties, sellProperties to getHouses, addHouse, sellHouse;
+//  Add and remove money methods receive int price(from selling, buying houses, rent or fees);
+//  Method move receives parameter int diceResult;
