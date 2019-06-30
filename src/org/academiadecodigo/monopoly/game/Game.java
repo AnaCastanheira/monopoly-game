@@ -26,10 +26,13 @@ public class Game {
 
     /**
      *
-     * Instanciar:
-     *              Board;
-     *              Dice;
-     *
+     * Instantiate:
+     *         		Board;
+     *              	Dice;
+     * Initialize:
+     * 			player Order array;
+     *			Prompt;
+     *			playCounter control variable;
      *
      *
      * */
@@ -59,10 +62,8 @@ public class Game {
     /**
      *
      * Instantiate new Player's on LinkedList 'players'
-     * Set playing order
-     * Distribute initial money
-     *
-     *
+     * Set an array with Players index distributed by playing order
+     * invoke method Distribute initial money
      *
      *
      * */
@@ -100,12 +101,25 @@ public class Game {
         }
         distributeInitialMoney();
     }
+    /**
+     *
+     *  Distribute initial money to all players
+     *
+     */
 
     private void distributeInitialMoney(){
         for (Player list: playersList) {
             list.addMoney(INITIAL_MONEY);
         }
     }
+    /**
+     *
+     *  menu Prompted before player rolls dice:
+     *  gives options to:
+     *	- Roll the dice ( and ask Player to move himself )
+     *	- Remove himeself from game
+     *	- ForceShutdown the whole game
+     */
 
     private void menuUserRollDice(Player player) {
 
@@ -121,12 +135,26 @@ public class Game {
                 "(3) Force  game shutdown.\n");
         int option = prompt.getUserInput(menuOption);
 
-        if(option == 1){
-            player.move(dice.rollTheDice());
+        if(option == 2){
+            playersList.remove(player);
             return;
         }
-        //TODO QUIT GAME
+
+        if(option==3){
+            System.exit(1);
+        }
+        player.move(dice.rollTheDice());
+
     }
+    /**
+     *
+     *  menu Prompted after the player Rolls the dice,
+     *  	IF the house where he isn't owned
+     *  gives options to:
+     *	- Buy the house
+     *	- Sell a house
+     *	- End his turn
+     */
 
     private void menuOptionBuy(Player player){
 
@@ -141,21 +169,32 @@ public class Game {
                 "(2) Sell\n" +
                 "(3) End Turn\n");
 
-    int option = prompt.getUserInput(menuOption);
+        int option = prompt.getUserInput(menuOption);
 
-    if(option == 1) {
-        if(player.getBalance()<board.getHouse(player.getCurrentPosition()).getValue()){
-            System.out.println("You have no money");
-            //TODO WANNA SELL ONE ???????????????????????
+        if(option == 1) {
+            if(player.getBalance()<board.getHouse(player.getCurrentPosition()).getValue()){
+                System.out.println("You have no money");
+                //TODO WANNA SELL ONE ???????????????????????
+                return;
+            }
+            player.addHouse(board.getHouse(player.getCurrentPosition()));
+        }
+        if(option ==2){
+            menuForcedSell(player);
             return;
         }
-        player.addHouse(board.getHouse(player.getCurrentPosition()));
-    }
-    if(option ==2){
-        menuForcedSell(player);
-    }
         System.out.println();
     }
+
+
+    /**
+     *
+     *  menu Prompted IF player has to pay rent && has insifucient funds:
+     *  lists player owned houses giving options to:
+     *	- Select the house he wants to sell
+     *
+     *
+     */
 
 
     private void menuForcedSell(Player player){
@@ -181,7 +220,7 @@ public class Game {
 
     public void playRound(Player player){
         //TODO
-        playerMove(playersList.get(playerTurn[0]));
+        playerMove(player);
     }
 
     private void playerMove(Player player) {
@@ -196,7 +235,7 @@ public class Game {
 
             if (player.getBalance() < board.getHouse(currentPos).getRent()) {
                 menuForcedSell(player);
-        }
+            }
             player.removeMoney(board.getHouse(currentPos).getRent());
 
             return;
@@ -210,9 +249,8 @@ public class Game {
 
         for (int i = 0; i <playersList.size() ; i++) {
             if(playersList.contains(playersList.get(playerTurn[i]))){ /** Jump player position if player has left */
-            playRound(playersList.get(playerTurn[i]));
+                playRound(playersList.get(playerTurn[i]));
             }
         }
     }
 }
-
