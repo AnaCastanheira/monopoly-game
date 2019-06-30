@@ -62,6 +62,9 @@ public class Player implements Iterable<House> {
         return name;
     }
 
+    public Socket getPlayerSocket() {
+        return playerSocket;
+    }
 
     //Returns the total amount of money the player currently has
     public int getBalance() {
@@ -94,6 +97,7 @@ public class Player implements Iterable<House> {
         int i = houses.size();
         houses.add(i, house);
         removeMoney(house.getValue());
+        house.buy();
     }
 
 
@@ -101,6 +105,7 @@ public class Player implements Iterable<House> {
     public void sellHouse(int index) {
         houses.remove(index);
         addMoney(houses.get(index).getValue());
+        houses.get(index).sell();
     }
 
 

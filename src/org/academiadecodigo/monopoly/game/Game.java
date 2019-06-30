@@ -9,7 +9,7 @@ import org.academiadecodigo.monopoly.player.Player;
 import org.academiadecodigo.monopoly.player.PlayerTest;
 
 
-import java.io.IOException;
+import java.io.*;
 import java.net.ServerSocket;
 import java.sql.SQLOutput;
 import java.util.HashSet;
@@ -55,7 +55,7 @@ public class Game implements Runnable {
 
 
 
-    public void init() {
+    public void init() throws IOException {
         setupGame();
 
 
@@ -75,7 +75,7 @@ public class Game implements Runnable {
      *
      * */
 
-    private void setupGame (){
+    private void setupGame () throws IOException {
 
         ServerSocket serverSocket = null;
         try {
@@ -95,6 +95,13 @@ public class Game implements Runnable {
                 e.printStackTrace();
             }
             System.out.println("Player " + i + " is Connected" );
+            String string = "Player " + i + " is Connected";
+
+            broadcast(string);
+           /* PrintWriter out = new PrintWriter(playersList.get(i).getPlayerSocket().getOutputStream());
+            out.println(string);
+            out.flush();
+            out.close();*/
             openingGameChooser[i] = dice.rollTheDice();
             playerTurn[i]=i;
         }
@@ -143,6 +150,8 @@ public class Game implements Runnable {
 
     private void menuUserRollDice(Player player) {
         System.out.println("It's your turn "+player.getName()+ ", you are currently at position: "+player.getCurrentPosition()+"\n");
+        String s = player.getName()+ ", it's your turn! You are currently at position: "+board.getHouse(player.getCurrentPosition()).getHouseName()+"\n";
+        broadcast(s);
         Set<Integer> validOptions = new HashSet<>();
         validOptions.add(1);
         validOptions.add(2);
@@ -158,6 +167,8 @@ public class Game implements Runnable {
         if(option == 2){
             playersList.remove(player);
             System.out.println(player.getName()+ " has left the game.");
+            String s1 = player.getName()+ " has left the game.";
+            broadcast(s1);
             return;
         }
 
@@ -165,10 +176,17 @@ public class Game implements Runnable {
 
             System.out.println("The Game is now over.\n"+
                     player.getName()+" has decided to finish the game.");
-            System.exit(1);
-        }
 
-        player.move(dice.rollTheDice());
+            String s2 = "The Game is now over.\n"+
+                    player.getName()+" has decided to finish the game.";
+
+            broadcast(s2);
+            System.exit(1);
+
+        }
+        int diceValue =dice.rollTheDice();
+        player.move(diceValue);
+
 
     }
 
@@ -182,8 +200,10 @@ public class Game implements Runnable {
      *	- End his turn
      */
 
-    private void menuOptionBuy(Player player){
+    private void menuOptionBuy(Player player) throws IOException {
         System.out.println(player.getName()+ "you have moved to "+player.getCurrentPosition());
+        String s2 = player.getName()+ " threw :" + dice.getSteps() + "and you are in: " + board.getHouse(player.getCurrentPosition()).getHouseName() + ".";
+        broadcast(s2);
         Set<Integer> validOptions = new HashSet<>();
         validOptions.add(1);
         validOptions.add(2);
@@ -204,6 +224,8 @@ public class Game implements Runnable {
                 return;
             }
             player.addHouse(board.getHouse(player.getCurrentPosition()));
+            System.out.println("Congrasts you just bought :" + board.getHouse(player.getCurrentPosition()).getHouseName());
+
         }
         if(option ==2){
             menuForcedSell(player);
@@ -248,12 +270,12 @@ public class Game implements Runnable {
         //}
     }
 
-    public void playRound(Player player){
+    public void playRound(Player player) throws IOException {
         //TODO
         playerMove(player);
     }
 
-    private void playerMove(Player player) {
+    private void playerMove(Player player) throws IOException {
 
         menuUserRollDice(player);
 
@@ -261,13 +283,14 @@ public class Game implements Runnable {
 
         System.out.println(player.getName() + ", you are now at house: " + board.getHouse(currentPos).getHouseName());
 
-        if (board.getHouse(currentPos).isOwned() && !player.haveThisHouse(board.getHouse(currentPos))) {
+        if ((board.getHouse(currentPos).isOwned()) && (!player.haveThisHouse(board.getHouse(currentPos)))) {
+            System.out.println("This house is taken");
 
             if (player.getBalance() < board.getHouse(currentPos).getRent()) {
                 menuForcedSell(player);
             }
             player.removeMoney(board.getHouse(currentPos).getRent());
-
+            System.out.println("Player payed: " + board.getHouse(currentPos).getRent());
             return;
         }
 
@@ -275,7 +298,7 @@ public class Game implements Runnable {
     }
 
 
-    private void startPlay() {
+    private void startPlay() throws IOException {
 
         for (int i = 0; i <playersList.size() ; i++) {
             if(playersList.contains(playersList.get(playerTurn[i]))){ /** Jump player position if player has left */
@@ -286,8 +309,27 @@ public class Game implements Runnable {
 
     @Override
     public void run() {
-        setupGame();
-        startPlay();
-        playerMove(playersList.element());
+        try {
+            init();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
+
+    public void broadcast(String string){
+
+        PrintWriter printWriter;
+
+        for(int i = 0; i < playersList.size(); i++){
+
+            try {
+                printWriter = new PrintWriter(playersList.get(i).getPlayerSocket().getOutputStream());
+                printWriter.println(string);
+                printWriter.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 }
