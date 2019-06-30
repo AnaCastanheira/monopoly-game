@@ -19,6 +19,7 @@ import java.util.Set;
 public class Game implements Runnable {
 
     private final int INITIAL_MONEY = 16000;
+    private final int PORT = 9999;
     private Board board;
     private LinkedList<Player> playersList;
     private Dice dice;
@@ -76,6 +77,13 @@ public class Game implements Runnable {
 
     private void setupGame (){
 
+        ServerSocket serverSocket = null;
+        try {
+            serverSocket = new ServerSocket(PORT);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         int[] openingGameChooser = new int[numberOfPlayers];
         playersList = new LinkedList<>();
 
@@ -86,7 +94,7 @@ public class Game implements Runnable {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
+            System.out.println("Player " + i + " is Connected" );
             openingGameChooser[i] = dice.rollTheDice();
             playerTurn[i]=i;
         }
@@ -218,13 +226,17 @@ public class Game implements Runnable {
     private void menuForcedSell(Player player){
         Set<Integer> validOptions = new HashSet<>();
 
+        int i;
 
-        for (int i = 0; i <player.nrOfHouses(); i++) {
+        for ( i = 0; i <player.nrOfHouses(); i++) {
             validOptions.add(i+1);
         }
 
+        validOptions.add(i);
+
         IntegerInputScanner menuOption = new IntegerSetInputScanner(validOptions);
-        menuOption.setMessage("You will have to choose one house to sell " + player.getName() +", please select one of your houses : \n "+ player.getHouses());
+        menuOption.setMessage("You will have to choose one house to sell " + player.getName()
+                +", please select one of your houses : \n "+ player.getHouses());
         int option = prompt.getUserInput(menuOption);
 
         //for (int i = 0; i <player.nrOfHouses() ; i++) {
@@ -274,6 +286,8 @@ public class Game implements Runnable {
 
     @Override
     public void run() {
-
+        setupGame();
+        startPlay();
+        playerMove(playersList.element());
     }
 }
