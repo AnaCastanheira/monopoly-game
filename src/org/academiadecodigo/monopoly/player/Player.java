@@ -97,15 +97,16 @@ public class Player implements Runnable, Iterable<House> {
 
     //adds a new house to the set of properties the player has, and decreases its value to the balance
     public void addHouse(House house){
-        houses.add(house);
+        int i = houses.size();
+        houses.add(i, house);
         removeMoney(house.getValue());
     }
 
 
     //removes a house form the set of properties the player has, and adds its value to the balance
-    public void sellHouse(House house){
-        houses.remove(house);
-        addMoney(house.getValue());
+    public void sellHouse(int index){
+        houses.remove(index);
+        addMoney(houses.get(index).getValue());
     }
 
 
