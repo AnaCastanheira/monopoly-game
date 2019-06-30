@@ -6,12 +6,10 @@ import org.academiadecodigo.bootcamp.scanners.integer.IntegerInputScanner;
 import org.academiadecodigo.bootcamp.scanners.integer.IntegerSetInputScanner;
 
 import org.academiadecodigo.monopoly.player.Player;
-import org.academiadecodigo.monopoly.player.PlayerTest;
 
 
 import java.io.*;
 import java.net.ServerSocket;
-import java.sql.SQLOutput;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
@@ -150,7 +148,7 @@ public class Game implements Runnable {
 
     private void menuUserRollDice(Player player) {
         System.out.println("It's your turn "+player.getName()+ ", you are currently at position: "+player.getCurrentPosition()+"\n");
-        String s = player.getName()+ ", it's your turn! You are currently at position: "+board.getHouse(player.getCurrentPosition()).getHouseName()+"\n";
+        String s = player.getName() + " it's your turn! \n" + board.getHouse(player.getCurrentPosition()).getHouseName()+"\n";
         broadcast(s);
         Set<Integer> validOptions = new HashSet<>();
         validOptions.add(1);
@@ -224,7 +222,9 @@ public class Game implements Runnable {
                 return;
             }
             player.addHouse(board.getHouse(player.getCurrentPosition()));
-            System.out.println("Congrasts you just bought :" + board.getHouse(player.getCurrentPosition()).getHouseName());
+            System.out.println("Congrats you just bought :" + board.getHouse(player.getCurrentPosition()).getHouseName());
+            String s4 = player.getName() + "Congrats you just bought :" + board.getHouse(player.getCurrentPosition()).getHouseName();
+            broadcast(s4);
 
         }
         if(option ==2){
@@ -232,6 +232,8 @@ public class Game implements Runnable {
             return;
         }
         System.out.println(player.getName()+" has ended his turn.\n");
+        String s5 = player.getName()+" has ended his turn.\n";
+        broadcast(s5);
     }
 
 
@@ -245,7 +247,7 @@ public class Game implements Runnable {
      */
 
 
-    private void menuForcedSell(Player player){
+    private void menuForcedSell(Player player) throws IOException {
         Set<Integer> validOptions = new HashSet<>();
 
         int i;
@@ -254,15 +256,17 @@ public class Game implements Runnable {
             validOptions.add(i+1);
         }
 
-        validOptions.add(i);
+        validOptions.add(player.nrOfHouses()+1);
 
         IntegerInputScanner menuOption = new IntegerSetInputScanner(validOptions);
         menuOption.setMessage("You will have to choose one house to sell " + player.getName()
-                +", please select one of your houses : \n "+ player.getHouses());
+                +", please select one of your houses : \n "+ player.getHouses()+"("+(player.nrOfHouses()+1)+") Go Back\n");
         int option = prompt.getUserInput(menuOption);
 
-        //for (int i = 0; i <player.nrOfHouses() ; i++) {
-          //  if(i == (option - 1)){
+        if(option==(player.nrOfHouses()+1)){
+            playerMove(player);
+        }
+
                 //TODO método getter LinkedList position of house in Player player.sellHouse(board.getHouse();
                 player.sellHouse(option-1);
                 System.out.println("### house removed ###\n");
@@ -273,11 +277,11 @@ public class Game implements Runnable {
     public void playRound(Player player) throws IOException {
         //TODO
         playerMove(player);
+        menuUserRollDice(player);
     }
 
     private void playerMove(Player player) throws IOException {
 
-        menuUserRollDice(player);
 
         int currentPos = player.getCurrentPosition();
 
@@ -331,5 +335,16 @@ public class Game implements Runnable {
             }
         }
     }
+
+    public void whisper(String string){
+
+        PrintWriter printWriter;
+
+            try {
+                printWriter = new PrintWriter(playerList.get().getPlayerSocket().getOutputStream());
+                printWriter.println(string);
+                printWriter.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
 
 }
