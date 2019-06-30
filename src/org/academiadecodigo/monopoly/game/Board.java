@@ -16,11 +16,28 @@ public class Board {
 
     public void buildBoard(){
 
-        for(int i = 0; i < NUM_OF_PURCHASE_SPOTS; i++){
+      int marcador = 1;
 
-            int random = (int)(Math.random()*4 + 1);
+      boolean[] testRepeater= new boolean[(int)(Math.random()*40)];
+        for (int i = 0; i < 40; i++) {
+            testRepeater[i]=false;
+        }
+        for (int i = 0; i <40 ; i++) {
+            double random = Math.random();
+            while(testRepeater[(int)(Math.random()*40)]){
+                random = Math.random();
+            }
+            testRepeater[(int)(Math.random()*40)] = true;
 
-            switch (random){
+            if(random<0.5) {
+                houses[i] = new House(i,House.HouseType.WHITE, House.HouseName.values()[i]);
+            }
+
+
+
+            int steps = (int)(Math.random()*(4-1) + 1);
+
+            switch (steps){
 
                 case 1:
 
@@ -44,9 +61,6 @@ public class Board {
             }
         }
 
-        for(int j = 19; j < NUM_OF_FREE_SPOTS +20; j++){
-            houses[j] = new House(j,House.HouseType.WHITE, House.HouseName.values()[j]);
-        }
     }
 
     public House getHouse(int housePosition){
