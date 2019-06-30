@@ -286,8 +286,6 @@ public class Game implements Runnable {
 
     @Override
     public void run() {
-        setupGame();
-        startPlay();
-        playerMove(playersList.element());
+        init();
     }
 }
