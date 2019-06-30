@@ -13,7 +13,7 @@ public class Board {
         houses = new House[NUM_OF_FREE_SPOTS + NUM_OF_PURCHASE_SPOTS];
     }
 
-    /**
+
     public void buildBoard(){
 
         for(int i = 0; i < NUM_OF_PURCHASE_SPOTS; i++){
@@ -48,7 +48,7 @@ public class Board {
             houses[j] = new House(j,House.HouseType.WHITE, House.HouseName.values()[j]);
         }
     }
-*/
+
     public House getHouse(int housePosition){
 
         return houses[housePosition];
