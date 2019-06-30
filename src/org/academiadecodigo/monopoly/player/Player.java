@@ -8,7 +8,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
 
-public class Player implements Runnable, Iterable<House> {
+public class Player implements Iterable<House> {
 
 
     private String name;
@@ -19,10 +19,11 @@ public class Player implements Runnable, Iterable<House> {
 
 
 
-    public Player(String name){
+    public Player(String name, Socket playerSocket){
 
         this.name = name;
         this.houses = new LinkedList<House>();
+        this.playerSocket = playerSocket;
 
     }
 
@@ -74,11 +75,6 @@ public class Player implements Runnable, Iterable<House> {
         return currentPosition;
     }
 
-
-    @Override
-    public void run() {
-
-    }
 
 
     //adds the value price in the balance of the player
