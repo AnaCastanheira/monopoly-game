@@ -6,8 +6,10 @@ import org.academiadecodigo.bootcamp.scanners.integer.IntegerInputScanner;
 import org.academiadecodigo.bootcamp.scanners.integer.IntegerSetInputScanner;
 
 import org.academiadecodigo.monopoly.player.Player;
+import org.academiadecodigo.monopoly.player.PlayerTest;
 
 
+import java.sql.SQLOutput;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
@@ -53,10 +55,11 @@ public class Game {
         setupGame();
 
 
-        while (board.isLive || playCounter <10) {
+        while (board.isBoardLive() || playCounter <10) {
             startPlay();
             playCounter++;
         }
+
     }
 
     /**
@@ -99,7 +102,10 @@ public class Game {
                 }
             }
         }
+        board.buildBoard();
         distributeInitialMoney();
+        board.setBoardLive(true);
+        TextArt.welcomeMessage();
     }
     /**
      *
@@ -122,14 +128,14 @@ public class Game {
      */
 
     private void menuUserRollDice(Player player) {
-
+        System.out.println("It's your turn "+player.getName()+ ", you are currently at position: "+player.getCurrentPosition()+"\n");
         Set<Integer> validOptions = new HashSet<>();
         validOptions.add(1);
         validOptions.add(2);
         validOptions.add(3);
 
         IntegerInputScanner menuOption = new IntegerSetInputScanner(validOptions);
-        menuOption.setMessage(player.getName() + " it's your turn, now you can:\n" +
+        menuOption.setMessage(" now you can:\n" +
                 "(1) Roll the dice and move.\n" +
                 "(2) Leave Game  \n" +
                 "(3) Force  game shutdown.\n");
@@ -137,15 +143,21 @@ public class Game {
 
         if(option == 2){
             playersList.remove(player);
+            System.out.println(player.getName()+ " has left the game.");
             return;
         }
 
         if(option==3){
+
+            System.out.println("The Game is now over.\n"+
+                    player.getName()+" has decided to finish the game.");
             System.exit(1);
         }
+
         player.move(dice.rollTheDice());
 
     }
+
     /**
      *
      *  menu Prompted after the player Rolls the dice,
@@ -157,14 +169,14 @@ public class Game {
      */
 
     private void menuOptionBuy(Player player){
-
+        System.out.println(player.getName()+ "you have moved to "+player.getCurrentPosition());
         Set<Integer> validOptions = new HashSet<>();
         validOptions.add(1);
         validOptions.add(2);
         validOptions.add(3);
 
         IntegerInputScanner menuOption = new IntegerSetInputScanner(validOptions);
-        menuOption.setMessage(player.getName() + " it's your turn, now you can:\n" +
+        menuOption.setMessage(" now you can:\n" +
                 "(1) Buy\n" +
                 "(2) Sell\n" +
                 "(3) End Turn\n");
@@ -183,7 +195,7 @@ public class Game {
             menuForcedSell(player);
             return;
         }
-        System.out.println();
+        System.out.println(player.getName()+" has ended his turn.\n");
     }
 
 
@@ -198,7 +210,6 @@ public class Game {
 
 
     private void menuForcedSell(Player player){
-
         Set<Integer> validOptions = new HashSet<>();
 
 
@@ -207,15 +218,16 @@ public class Game {
         }
 
         IntegerInputScanner menuOption = new IntegerSetInputScanner(validOptions);
-        menuOption.setMessage(player.getName() +" has these houses : \n "+ player.getHouses());
+        menuOption.setMessage("You will have to choose one house to sell " + player.getName() +", please select one of your houses : \n "+ player.getHouses());
         int option = prompt.getUserInput(menuOption);
 
-        for (int i = 0; i <player.nrOfHouses() ; i++) {
-            if(i == (option - 1)){
+        //for (int i = 0; i <player.nrOfHouses() ; i++) {
+          //  if(i == (option - 1)){
                 //TODO método getter LinkedList position of house in Player player.sellHouse(board.getHouse();
+                player.sellHouse(option-1);
                 System.out.println("### house removed ###\n");
-            }
-        }
+            //}
+        //}
     }
 
     public void playRound(Player player){

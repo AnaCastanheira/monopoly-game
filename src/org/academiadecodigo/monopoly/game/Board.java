@@ -12,6 +12,7 @@ public class Board {
         houses = new House[NUM_OF_SPOTS];
     }
 
+    /**
     public void buildBoard(){
 
         for(int i = 0; i < NUM_OF_SPOTS; i++){
@@ -42,7 +43,7 @@ public class Board {
             }
         }
     }
-
+*/
     public House getHouse(int housePosition){
 
         return houses[housePosition];
