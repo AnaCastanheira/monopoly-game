@@ -9,12 +9,14 @@ import org.academiadecodigo.monopoly.player.Player;
 import org.academiadecodigo.monopoly.player.PlayerTest;
 
 
+import java.io.IOException;
+import java.net.ServerSocket;
 import java.sql.SQLOutput;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 
-public class Game {
+public class Game implements Runnable {
 
     private final int INITIAL_MONEY = 16000;
     private Board board;
@@ -24,6 +26,7 @@ public class Game {
     private int [] playerTurn;
     private Prompt prompt;
     private int playCounter;
+    private ServerSocket serverSocket;
 
 
     /**
@@ -55,7 +58,7 @@ public class Game {
         setupGame();
 
 
-        while (board.isBoardLive() || playCounter <10) {
+        while (playCounter <10) {
             startPlay();
             playCounter++;
         }
@@ -78,7 +81,11 @@ public class Game {
 
         for (int i = 0; i < numberOfPlayers ; i++) {
 
-            playersList.add(i,new Player("Player - "+i));
+            try {
+                playersList.add(i,new Player("Player "+i,serverSocket.accept()));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
             openingGameChooser[i] = dice.rollTheDice();
             playerTurn[i]=i;
@@ -104,7 +111,6 @@ public class Game {
         }
         board.buildBoard();
         distributeInitialMoney();
-        board.setBoardLive(true);
         TextArt.welcomeMessage();
     }
     /**
@@ -264,5 +270,10 @@ public class Game {
                 playRound(playersList.get(playerTurn[i]));
             }
         }
+    }
+
+    @Override
+    public void run() {
+
     }
 }
