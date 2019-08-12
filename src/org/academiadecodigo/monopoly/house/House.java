@@ -26,6 +26,10 @@ public class House {
         return houseName.name;
     }
 
+    public HouseType getHouseType() {
+        return houseType;
+    }
+
     public boolean isOwned() {
         return owned;
     }
@@ -63,7 +67,7 @@ public class House {
         RICARDO_MUSCLE_GY2M("Ricardo Muscle Gym"),
         TASCO_DO_JORGITO("Tasco do Jorgito"),
         NINAS_DO_NORONHA("Ninas do Noronha"),
-        LIMA_FUTEBOL_CLUBE("Lima Futebol Clube"),
+        LIMA_FLY_ESCOBAR("Lima Futebol Clube"),
         DANCE_LIKE_EDMA("Dance Like Edma"),
         JONATHAN_BARBER("Jonathan Barber"),
         PETER_CROSSFIT_BOX("Peter CrossFit Box"),

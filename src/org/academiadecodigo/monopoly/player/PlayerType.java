@@ -2,11 +2,13 @@ package org.academiadecodigo.monopoly.player;
 
 public enum PlayerType {
 
-    FOX(0.9, 1, 1, false),
-    TIGER(1, 2 , 1, false),
-    WALE(1, 1, 1.1, false),
-    EAGLE(1, 1, 1, true);
+    BAD_ASS_NANCY(0.5, 1, 1, false),
+    DRUG_DEALE_DOUG(1, 2 , 1, false),
+    ROXANNE(1, 1, 1.1, false),
+    LUCKY_STRIKE_LANCE(1, 1, 1, true);
 
+    //BAD ASS DISCOUNT 20 RENT
+    //
     private double discountRent;
     private int doubleSteps;
     private double getExtraRentMoney;
